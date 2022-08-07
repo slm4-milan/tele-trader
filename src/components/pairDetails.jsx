@@ -6,37 +6,30 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import {Button} from "@mui/material";
 
 function createData(
-    name: string,
+    symbol: string,
     last: number,
-    change: number,
-    changePercent: number,
     high: number,
     low: number,
 ) {
-    return {name, last, change, changePercent, high, low};
+    return {symbol, last, high, low};
 }
 
 const rows = [
-    createData('BTCUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('ETHUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCBTC', 32866, 1492, 0.04, 33639, 30968),
-    createData('ETHBTC', 32866, 1492, 0.04, 33639, 30968),
+    createData('BTCUSD', 32866, 1492, 0.04),
 ];
 
-export default function PairsTable() {
+export default function PairDetails() {
     return (
         <React.Fragment>
             <TableContainer sx={{mb: 2}} component={Paper}>
                 <Table sx={{minWidth: 150}} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Last</TableCell>
-                            <TableCell align="right">Change</TableCell>
-                            <TableCell align="right">Change Percent</TableCell>
+                            <TableCell>Symbol</TableCell>
+                            <TableCell align="right">Last price</TableCell>
                             <TableCell align="right">High</TableCell>
                             <TableCell align="right">Low</TableCell>
                         </TableRow>
@@ -44,15 +37,13 @@ export default function PairsTable() {
                     <TableBody>
                         {rows.map((row) => (
                             <TableRow
-                                key={row.name}
+                                key={row.symbol}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
                             >
                                 <TableCell className="trading-pairs" component="th" scope="row">
-                                    {row.name}
+                                    {row.symbol}
                                 </TableCell>
                                 <TableCell align="right">{row.last}</TableCell>
-                                <TableCell align="right">{row.change}</TableCell>
-                                <TableCell align="right">{`${row.changePercent}%`}</TableCell>
                                 <TableCell align="right">{row.high}</TableCell>
                                 <TableCell align="right">{row.low}</TableCell>
                             </TableRow>
@@ -60,6 +51,10 @@ export default function PairsTable() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Button className="btn"
+                    color="inherit">Add to favorites</Button>
+            <Button className="btn-red"
+                    color="inherit">Remove from favorites</Button>
         </React.Fragment>
-    )
+    );
 }

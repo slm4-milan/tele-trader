@@ -21,12 +21,9 @@ function createData(
 const rows = [
     createData('BTCUSD', 32866, 1492, 0.04, 33639, 30968),
     createData('ETHUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCBTC', 32866, 1492, 0.04, 33639, 30968),
-    createData('ETHBTC', 32866, 1492, 0.04, 33639, 30968),
 ];
 
-export default function PairsTable() {
+export default function FavoritePairs() {
     return (
         <React.Fragment>
             <TableContainer sx={{mb: 2}} component={Paper}>
