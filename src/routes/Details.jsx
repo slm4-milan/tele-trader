@@ -101,7 +101,7 @@ const Details = () => {
                   }}>Remove from Favorites</Button> :
               <Button
                   variant="contained"
-                  color={'error'}
+                  color={'info'}
                   onClick={() => {
                     addToFavorites(tableData[0].name)
                   }}>Add to Favorites</Button>}

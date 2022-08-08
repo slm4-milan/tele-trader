@@ -1,51 +1,74 @@
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material';
+import {useNavigate} from "react-router-dom";
+import {useState} from 'react';
+import blue from '@mui/material/colors/blue';
 
 export default function PairsTable({
-    keys,
-    tableData,
-    allowClick
+  keys,
+  tableData,
+  allowClick
 }) {
-    const navigate = useNavigate();
+  const [data, setData] = useState(tableData);
+  const navigate = useNavigate();
 
-    return (
-        <>
-            <TableContainer sx={{mb: 2}} component={Paper}>
+  return (
+      <>
+        {
+          !data.length ?
+              <Alert severity="info">The list is empty</Alert> :
+              <TableContainer sx={{mb: 2}} component={Paper}>
                 <Table sx={{minWidth: 150}} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            {keys.map((key, index) => <TableCell key={key.displayName} align={index === 0 ? 'left' : 'right'}>{key.displayName}</TableCell>)}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            tableData.map((row) => {
-                                return  <TableRow
-                                        key={row.name}
-                                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                        onClick={() => {
-                                            if (allowClick) navigate(`/details/${row.name}`);
-                                        }}
-                                    >
-                                    {
-                                        keys.map((key, index) => {
-                                            return <TableCell align={index === 0 ? 'left' : 'right'} key={key.name} component="th" scope="row">
-                                                {row[key.name] || '/'}
-                                            </TableCell>
-                                        })
-                                    }
-                                    </TableRow>
+                  <TableHead>
+                    <TableRow>
+                      {keys.map(
+                          (key, index) => <TableCell
+                              key={key.displayName}
+                              align={index === 0
+                                  ? 'left'
+                                  : 'right'}>{key.displayName}</TableCell>)}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {
+                      data.map((row) => {
+                        return <TableRow
+                            key={row.name}
+                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                            onClick={() => {
+                              if (allowClick) {
+                                navigate(
+                                    `/details/${row.name}`);
+                              }
+                            }}
+                            hover
+                        >
+                          {
+                            keys.map((key, index) => {
+                              return <TableCell style={{
+                                color: index === 0 ? blue[500] : 'inherit'
+                              }} align={index === 0 ? 'left' : 'right'}
+                                                key={key.name} component="th"
+                                                scope="row">
+                                {row[key.name] || '/'}
+                              </TableCell>
                             })
-                        }
-                    </TableBody>
+                          }
+                        </TableRow>
+                      })
+                    }
+                  </TableBody>
                 </Table>
-            </TableContainer>
-        </>
-    )
+              </TableContainer>
+        }
+      </>
+  )
 }
