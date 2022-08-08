@@ -9,16 +9,106 @@ import {
   TableRow
 } from '@mui/material';
 import {useNavigate} from "react-router-dom";
-import {useState} from 'react';
+import {memo, useContext, useEffect, useState} from 'react';
+import {WebSocketContext} from '../context/webSocketContext';
+import {formatCurrency} from '../services/api';
 import blue from '@mui/material/colors/blue';
+import currencyFormatter from 'currency-formatter';
 
-export default function PairsTable({
+let wsChannels = [];
+
+function PairsTable({
   keys,
   tableData,
-  allowClick
+  allowClick,
+  autoUpdate = false
 }) {
   const [data, setData] = useState(tableData);
   const navigate = useNavigate();
+  const {wss, isWSActive} = useContext(WebSocketContext);
+
+  useEffect(() => {
+    if (autoUpdate && isWSActive) {
+      tableData.forEach((pair) => {
+        wss.send(JSON.stringify({
+          "event": "subscribe",
+          "channel": 'ticker',
+          symbol: `t${pair.name.toUpperCase()}`
+        }));
+      });
+    }
+  }, [autoUpdate, tableData, isWSActive, wss])
+
+  useEffect(() => {
+    if (wss) {
+      wss.onmessage = (msg) => {
+        if (msg) {
+          const message = JSON.parse(msg.data);
+          if (message.event === 'subscribed') {
+            wsChannels = [
+              ...wsChannels,
+              {
+                chanId: message.chanId,
+                name: message.pair
+              }
+            ];
+
+            setData((data) => {
+              const copy = [...data];
+              const pairIndex = copy.findIndex(
+                  (pair) => pair.name === message.pair)
+              if (pairIndex !== -1) {
+                copy[pairIndex].chanId = message.chanId;
+              }
+
+              return copy;
+            })
+          }
+
+          if (message.event === 'error') {
+            console.error(`WebSocket error: ${JSON.stringify(msg.data)}`);
+          }
+
+          if (message instanceof Array && message[1] instanceof Array) {
+            setData((data) => {
+              const copy = [...data];
+              const pairIndex = copy.findIndex(
+                  (pair) => pair.chanId === message[0]);
+
+              if (pairIndex !== -1) {
+                const change_percent = currencyFormatter.format(
+                    message[1][5] * 100, {decimal: '.'});
+                copy[pairIndex] = {
+                  ...copy[pairIndex],
+                  last_price: formatCurrency(message[1][6]),
+                  high: formatCurrency(message[1][8]),
+                  low: formatCurrency(message[1][9]),
+                  change: formatCurrency(message[1][4]),
+                  change_percent: change_percent > 0 ? `+${change_percent}%`
+                      : `${change_percent}%`
+                }
+              }
+
+              return copy;
+            })
+          }
+        }
+      };
+
+      return () => {
+        if (wsChannels.length) {
+          wsChannels.forEach((channel) => {
+            wss.send(JSON.stringify({
+              "event": "unsubscribe",
+              chanId: channel.chanId
+            }));
+          });
+
+          wsChannels = [];
+        }
+      }
+    }
+  }, [tableData, wss])
 
   return (
       <>
@@ -72,3 +162,5 @@ export default function PairsTable({
       </>
   )
 }
+
+export default memo(PairsTable);
