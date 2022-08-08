@@ -1,8 +1,16 @@
 import {memo, useEffect, useState} from "react";
 import PairsTable from "../components/PairsTable";
 import {getPairDetails, prepareDetailsData} from '../services/api';
-import {Alert, AlertTitle, Box, CircularProgress, Stack} from '@mui/material';
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  CircularProgress,
+  Stack
+} from '@mui/material';
 import {useParams} from 'react-router-dom';
+import useUserStore from '../store/user';
 
 const tableKeys = [
   {
@@ -28,7 +36,12 @@ const Details = () => {
   const [error, setError] = useState(null);
   const [tableData, setTableData] = useState(null);
   const {listingId} = useParams();
-  // const {isLoggedIn} = useAuthStore();
+  const {
+    isLoggedIn,
+    isFavorite,
+    addToFavorites,
+    removeFromFavorites
+  } = useUserStore();
 
   const init = async () => {
     try {
@@ -71,11 +84,29 @@ const Details = () => {
     </Box>
   }
 
-  return tableData ? <PairsTable
-          keys={tableKeys}
-          tableData={tableData}
-          allowClick={false}
-      /> :
+  return tableData ?
+      <>
+        <PairsTable
+            keys={tableKeys}
+            tableData={tableData}
+            allowClick={false}
+        />
+        {isLoggedIn && <Box sx={{display: 'flex'}}>
+          {isFavorite(tableData[0].name) ?
+              <Button
+                  variant="contained"
+                  color={'error'}
+                  onClick={() => {
+                    removeFromFavorites(tableData[0].name)
+                  }}>Remove from Favorites</Button> :
+              <Button
+                  variant="contained"
+                  color={'error'}
+                  onClick={() => {
+                    addToFavorites(tableData[0].name)
+                  }}>Add to Favorites</Button>}
+        </Box>}
+      </> :
       <Stack sx={{width: '100%'}} spacing={2}>
         <Alert severity="warning">
           <AlertTitle>Warning</AlertTitle>
