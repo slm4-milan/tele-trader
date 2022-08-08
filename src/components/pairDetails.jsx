@@ -9,10 +9,10 @@ import Paper from '@mui/material/Paper';
 import {Button} from "@mui/material";
 
 function createData(
-    symbol: string,
-    last: number,
-    high: number,
-    low: number,
+    symbol,
+    last,
+    high,
+    low,
 ) {
     return {symbol, last, high, low};
 }

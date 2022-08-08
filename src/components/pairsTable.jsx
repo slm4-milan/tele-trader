@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,60 +5,47 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useNavigate } from "react-router-dom";
 
-function createData(
-    name: string,
-    last: number,
-    change: number,
-    changePercent: number,
-    high: number,
-    low: number,
-) {
-    return {name, last, change, changePercent, high, low};
-}
+export default function PairsTable({
+    keys,
+    tableData,
+    allowClick
+}) {
+    const navigate = useNavigate();
 
-const rows = [
-    createData('BTCUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('ETHUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCUSD', 32866, 1492, 0.04, 33639, 30968),
-    createData('LTCBTC', 32866, 1492, 0.04, 33639, 30968),
-    createData('ETHBTC', 32866, 1492, 0.04, 33639, 30968),
-];
-
-export default function PairsTable() {
     return (
-        <React.Fragment>
+        <>
             <TableContainer sx={{mb: 2}} component={Paper}>
                 <Table sx={{minWidth: 150}} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Last</TableCell>
-                            <TableCell align="right">Change</TableCell>
-                            <TableCell align="right">Change Percent</TableCell>
-                            <TableCell align="right">High</TableCell>
-                            <TableCell align="right">Low</TableCell>
+                            {keys.map((key, index) => <TableCell key={key.displayName} align={index === 0 ? 'left' : 'right'}>{key.displayName}</TableCell>)}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <TableRow
-                                key={row.name}
-                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                            >
-                                <TableCell className="trading-pairs" component="th" scope="row">
-                                    {row.name}
-                                </TableCell>
-                                <TableCell align="right">{row.last}</TableCell>
-                                <TableCell align="right">{row.change}</TableCell>
-                                <TableCell align="right">{`${row.changePercent}%`}</TableCell>
-                                <TableCell align="right">{row.high}</TableCell>
-                                <TableCell align="right">{row.low}</TableCell>
-                            </TableRow>
-                        ))}
+                        {
+                            tableData.map((row) => {
+                                return  <TableRow
+                                        key={row.name}
+                                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                                        onClick={() => {
+                                            if (allowClick) navigate(`/details/${row.name}`);
+                                        }}
+                                    >
+                                    {
+                                        keys.map((key, index) => {
+                                            return <TableCell align={index === 0 ? 'left' : 'right'} key={key.name} component="th" scope="row">
+                                                {row[key.name] || '/'}
+                                            </TableCell>
+                                        })
+                                    }
+                                    </TableRow>
+                            })
+                        }
                     </TableBody>
                 </Table>
             </TableContainer>
-        </React.Fragment>
+        </>
     )
 }

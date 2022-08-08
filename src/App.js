@@ -1,18 +1,27 @@
 import React from "react";
 import './App.css';
 import Header from './components/header';
-import PairsTable from "./components/pairsTable";
-import PairDetails from "./components/pairDetails";
-import FavoritePairs from "./components/favoritePairs";
+import Home from "./routes/Home";
+import Details from './routes/Details';
+import NotFound from './routes/NotFound';
+
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+} from "react-router-dom";
 
 function App() {
     return (
-        <React.Fragment>
-            <Header/>
-            <PairsTable/>
-            <PairDetails/>
-            <FavoritePairs/>
-        </React.Fragment>
+        <BrowserRouter>
+            <Header />
+            <Routes>
+                <Route path="/" index element={<Home />} />
+                <Route path="/details/:listingId" element={<Details />} />
+                <Route path="/favorites" element={<Details />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
