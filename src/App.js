@@ -1,6 +1,6 @@
 import React from "react";
 import './App.css';
-import Header from './components/header';
+import Header from './components/Header';
 import Home from "./routes/Home";
 import Details from './routes/Details';
 import NotFound from './routes/NotFound';

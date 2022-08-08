@@ -1,11 +1,7 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useMemo } from "react";
 import PairsTable from "../components/PairsTable";
 import {getPairs, getPairDetails, prepareData} from '../services/api';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Stack from '@mui/material/Stack';
+import {CircularProgress, Box, Alert, AlertTitle, Stack} from '@mui/material'
 
 const tableKeys = [
 	{
@@ -17,8 +13,12 @@ const tableKeys = [
 		name: 'last_price'
 	},
 	{
-		displayName: 'Change Percent',
+		displayName: 'Change',
 		name: 'change'
+	},
+	{
+		displayName: 'Change Percent',
+		name: 'change_percent'
 	},
 	{
 		displayName: 'High',
@@ -58,6 +58,13 @@ const Home = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const table = useMemo(()=>
+	<PairsTable
+		keys={tableKeys}
+tableData={tableData}
+allowClick
+autoUpdate/>, [tableData])
+
 	if (error) {
 		return <Stack sx={{ width: '100%' }} spacing={2}>
 			<Alert severity="error">
@@ -73,11 +80,7 @@ const Home = () => {
 		</Box>
 	}
 
-	return tableData ? <PairsTable 
-		keys={tableKeys}
-		tableData={tableData}
-		allowClick
-	/> :
+	return tableData ? table :
 	<Stack sx={{ width: '100%' }} spacing={2}>
 		<Alert severity="warning">
 			<AlertTitle>Warning</AlertTitle>
